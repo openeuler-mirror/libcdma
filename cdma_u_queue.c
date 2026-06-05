@@ -36,8 +36,8 @@ static int cdma_u_cmd_create_queue(struct dma_context *ctx,
 
 	ret = ioctl(ctx->dma_dev->fd, CDMA_SYNC, &hdr);
 	if (ret) {
-		CDMA_LOG_ERR("ioctl in create queue failed, ret = %d, errno = %d, cmd = %u.\n",
-			     ret, errno, hdr.command);
+		CDMA_LOG_ERR("ioctl in create queue, ret = %d %d, cmd = %u.\n", ret,
+			     errno, hdr.command);
 		return ret;
 	}
 
@@ -67,8 +67,8 @@ static int cdma_u_cmd_delete_queue(struct cdma_u_queue *cdma_queue)
 
 	ret = ioctl(queue->ctx->dma_dev->fd, CDMA_SYNC, &hdr);
 	if (ret)
-		CDMA_LOG_ERR("ioctl in delete queue failed, ret = %d, errno = %d, cmd = %u.\n",
-			     ret, errno, hdr.command);
+		CDMA_LOG_ERR("ioctl in delete queue, ret = %d %d, cmd = %u.\n", ret,
+			     errno, hdr.command);
 
 	return ret;
 }

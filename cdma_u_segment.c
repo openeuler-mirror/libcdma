@@ -53,8 +53,8 @@ static int cdma_register_kernel_seg(struct dma_context *ctx,
 
 	ret = ioctl(ctx->dma_dev->fd, CDMA_SYNC, &hdr);
 	if (ret) {
-		CDMA_LOG_ERR("ioctl cdma register seg failed, ret = %d, errno = %d, cmd = %u.\n",
-			     ret, errno, hdr.command);
+		CDMA_LOG_ERR("ioctl cdma register seg, ret = %d %d, cmd = %u.\n", ret,
+			     errno, hdr.command);
 		return ret;
 	}
 
@@ -116,10 +116,9 @@ static void cdma_unregister_kernel_seg(struct dma_context *ctx,
 	hdr.args_addr = (uint64_t)(&in_info);
 
 	ret = ioctl(ctx->dma_dev->fd, CDMA_SYNC, &hdr);
-	if (ret) {
-		CDMA_LOG_ERR("ioctl cdma unregister seg failed, ret = %d, errno = %d, cmd = %u.\n",
-			     ret, errno, hdr.command);
-	}
+	if (ret)
+		CDMA_LOG_ERR("ioctl cdma unregister seg, ret = %d %d, cmd = %u.\n", ret,
+			     errno, hdr.command);
 }
 
 void cdma_unregister_seg(struct dma_context *ctx, struct dma_seg *seg)

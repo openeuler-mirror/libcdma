@@ -209,6 +209,24 @@ static uint8_t cdma_parse_jfs_opcode(dma_wr_opcode_t opcode)
 	}
 }
 
+static bool cdma_check_sge_num(uint8_t opcode, struct cdma_u_jetty_queue *sq,
+			       dma_jfs_wr_t *wr)
+{
+	switch (opcode) {
+	case CDMA_OPCODE_CAS:
+	case CDMA_OPCODE_FAA:
+		return sq->max_sge_num == 0;
+	case CDMA_OPCODE_READ:
+		return (wr->rw.dst.num_sge > CDMA_JFS_MAX_SGE_READ) ||
+				(wr->rw.dst.num_sge > sq->max_sge_num);
+	case CDMA_OPCODE_WRITE_WITH_NOTIFY:
+		return (wr->rw.src.num_sge > CDMA_JFS_MAX_SGE_NOTIFY) ||
+				(wr->rw.src.num_sge > sq->max_sge_num);
+	default:
+		return wr->rw.src.num_sge > sq->max_sge_num;
+	}
+}
+
 static inline uint32_t cdma_get_ctl_len(uint8_t opcode)
 {
 	if (opcode == CDMA_WR_OPC_WRITE_NOTIFY)
@@ -252,7 +270,6 @@ static int cdma_u_fill_write_sqe(struct cdma_jfs_sqe_ctl *wqe_ctl,
 	dma_sge_t *sge_info;
 
 	sge = (struct cdma_wqe_sge *)((char *)wqe_ctl + cdma_get_ctl_len(wr->opcode));
-
 	if (cdma_fill_multi_sge(wqe_ctl, wr, sge)) {
 		CDMA_LOG_ERR("cdma fill sw sge invalid.\n");
 		return -EINVAL;
@@ -264,9 +281,11 @@ static int cdma_u_fill_write_sqe(struct cdma_jfs_sqe_ctl *wqe_ctl,
 	wqe_ctl->token_en = sge_info->seg.token_value_valid;
 	wqe_ctl->rmt_token_value = sge_info->seg.token_value;
 	wqe_ctl->target_hint = wr->rw.target_hint;
-	wqe_ctl->rmt_addr_l_or_tid = sge_info->addr & (uint32_t)SQE_CTL_RMA_ADDR_BIT;
-	wqe_ctl->rmt_addr_h_or_tval = (sge_info->addr >> (uint32_t)SQE_CTL_RMA_ADDR_OFFSET) &
-				      (uint32_t)SQE_CTL_RMA_ADDR_BIT;
+	wqe_ctl->rmt_addr_l_or_tid =
+		sge_info->addr & (uint32_t)SQE_CTL_RMA_ADDR_BIT;
+	wqe_ctl->rmt_addr_h_or_tval =
+		(sge_info->addr >> (uint32_t)SQE_CTL_RMA_ADDR_OFFSET) &
+		(uint32_t)SQE_CTL_RMA_ADDR_BIT;
 
 	if (wr->opcode == CDMA_WR_OPC_WRITE_NOTIFY) {
 		token_info = (struct cdma_token_info *)((char *)wqe_ctl +
@@ -283,7 +302,8 @@ static int cdma_u_fill_write_sqe(struct cdma_jfs_sqe_ctl *wqe_ctl,
 	return 0;
 }
 
-static int cdma_u_fill_read_sqe(struct cdma_jfs_sqe_ctl *wqe_ctl, dma_jfs_wr_t *wr)
+static int cdma_u_fill_read_sqe(struct cdma_jfs_sqe_ctl *wqe_ctl,
+				dma_jfs_wr_t *wr)
 {
 	struct cdma_wqe_sge *sge;
 	uint32_t sge_num = 0;
@@ -309,54 +329,11 @@ static int cdma_u_fill_read_sqe(struct cdma_jfs_sqe_ctl *wqe_ctl, dma_jfs_wr_t *
 	wqe_ctl->toid = sge_info->seg.tid;
 	wqe_ctl->token_en = sge_info->seg.token_value_valid;
 	wqe_ctl->rmt_token_value = sge_info->seg.token_value;
-	wqe_ctl->rmt_addr_l_or_tid = sge_info->addr & (uint32_t)SQE_CTL_RMA_ADDR_BIT;
-	wqe_ctl->rmt_addr_h_or_tval = (sge_info->addr >> (uint32_t)SQE_CTL_RMA_ADDR_OFFSET) &
-				      (uint32_t)SQE_CTL_RMA_ADDR_BIT;
-
-	return 0;
-}
-
-static bool cdma_check_sge_num(uint8_t opcode, struct cdma_u_jetty_queue *sq,
-			       dma_jfs_wr_t *wr)
-{
-	switch (opcode) {
-	case CDMA_OPCODE_CAS:
-	case CDMA_OPCODE_FAA:
-		return sq->max_sge_num == 0;
-	case CDMA_OPCODE_READ:
-		return (wr->rw.dst.num_sge > CDMA_JFS_MAX_SGE_READ) ||
-				(wr->rw.dst.num_sge > sq->max_sge_num);
-	case CDMA_OPCODE_WRITE_WITH_NOTIFY:
-		return (wr->rw.src.num_sge > CDMA_JFS_MAX_SGE_NOTIFY) ||
-				(wr->rw.src.num_sge > sq->max_sge_num);
-	default:
-		return wr->rw.src.num_sge > sq->max_sge_num;
-	}
-}
-
-static inline bool check_sq_overflow(struct cdma_u_jetty_queue *sq,
-				     uint32_t wqebb_cnt)
-{
-	return (sq->pi - sq->ci + wqebb_cnt) > sq->baseblk_cnt;
-}
-
-static int cdma_copy_to_sq(struct cdma_u_jetty_queue *sq, uint32_t wqebb_cnt,
-			   struct cdma_jfs_wqebb *tmp_sq)
-{
-	uint32_t remain = sq->baseblk_cnt - (sq->pi & sq->baseblk_mask);
-	uint32_t tail_cnt;
-	uint32_t head_cnt;
-
-	if (check_sq_overflow(sq, wqebb_cnt))
-		return -ENOMEM;
-
-	tail_cnt = remain > wqebb_cnt ? wqebb_cnt : remain;
-	head_cnt = wqebb_cnt - tail_cnt;
-
-	memcpy(sq->qbuf_curr, tmp_sq, tail_cnt * sizeof(*tmp_sq));
-
-	if (head_cnt)
-		memcpy(sq->qbuf, tmp_sq + tail_cnt, head_cnt * sizeof(*tmp_sq));
+	wqe_ctl->rmt_addr_l_or_tid =
+		sge_info->addr & (uint32_t)SQE_CTL_RMA_ADDR_BIT;
+	wqe_ctl->rmt_addr_h_or_tval =
+		(sge_info->addr >> (uint32_t)SQE_CTL_RMA_ADDR_OFFSET) &
+		(uint32_t)SQE_CTL_RMA_ADDR_BIT;
 
 	return 0;
 }
@@ -373,7 +350,8 @@ static inline bool cdma_check_atomic_len(uint32_t len, uint8_t opcode)
 	return false;
 }
 
-static int cdma_u_fill_cas_sqe(struct cdma_jfs_sqe_ctl *wqe_ctl, dma_jfs_wr_t *wr)
+static int cdma_u_fill_cas_sqe(struct cdma_jfs_sqe_ctl *wqe_ctl,
+			       dma_jfs_wr_t *wr)
 {
 	struct cdma_wqe_sge *sge;
 	dma_sge_t *sge_info;
@@ -394,9 +372,11 @@ static int cdma_u_fill_cas_sqe(struct cdma_jfs_sqe_ctl *wqe_ctl, dma_jfs_wr_t *w
 	wqe_ctl->toid = sge_info->seg.tid;
 	wqe_ctl->token_en = sge_info->seg.token_value_valid;
 	wqe_ctl->rmt_token_value = sge_info->seg.token_value;
-	wqe_ctl->rmt_addr_l_or_tid = sge_info->addr & (uint32_t)SQE_CTL_RMA_ADDR_BIT;
-	wqe_ctl->rmt_addr_h_or_tval = (sge_info->addr >> (uint32_t)SQE_CTL_RMA_ADDR_OFFSET) &
-								  (uint32_t)SQE_CTL_RMA_ADDR_BIT;
+	wqe_ctl->rmt_addr_l_or_tid =
+		sge_info->addr & (uint32_t)SQE_CTL_RMA_ADDR_BIT;
+	wqe_ctl->rmt_addr_h_or_tval =
+		(sge_info->addr >> (uint32_t)SQE_CTL_RMA_ADDR_OFFSET) &
+		(uint32_t)SQE_CTL_RMA_ADDR_BIT;
 
 	if (sge->length <= CDMA_ATOMIC_LEN_8) {
 		memcpy((char *)wqe_ctl + SQE_ATOMIC_DATA_FIELD, &wr->cas.swap_data,
@@ -413,7 +393,8 @@ static int cdma_u_fill_cas_sqe(struct cdma_jfs_sqe_ctl *wqe_ctl, dma_jfs_wr_t *w
 	return 0;
 }
 
-static int cdma_u_fill_faa_sqe(struct cdma_jfs_sqe_ctl *wqe_ctl, dma_jfs_wr_t *wr)
+static int cdma_u_fill_faa_sqe(struct cdma_jfs_sqe_ctl *wqe_ctl,
+			       dma_jfs_wr_t *wr)
 {
 	struct cdma_wqe_sge *sge;
 	dma_sge_t *sge_info;
@@ -434,9 +415,11 @@ static int cdma_u_fill_faa_sqe(struct cdma_jfs_sqe_ctl *wqe_ctl, dma_jfs_wr_t *w
 	wqe_ctl->toid = sge_info->seg.tid;
 	wqe_ctl->token_en = sge_info->seg.token_value_valid;
 	wqe_ctl->rmt_token_value = sge_info->seg.token_value;
-	wqe_ctl->rmt_addr_l_or_tid = sge_info->addr & (uint32_t)SQE_CTL_RMA_ADDR_BIT;
-	wqe_ctl->rmt_addr_h_or_tval = (sge_info->addr >> (uint32_t)SQE_CTL_RMA_ADDR_OFFSET) &
-								  (uint32_t)SQE_CTL_RMA_ADDR_BIT;
+	wqe_ctl->rmt_addr_l_or_tid =
+		sge_info->addr & (uint32_t)SQE_CTL_RMA_ADDR_BIT;
+	wqe_ctl->rmt_addr_h_or_tval =
+		(sge_info->addr >> (uint32_t)SQE_CTL_RMA_ADDR_OFFSET) &
+		(uint32_t)SQE_CTL_RMA_ADDR_BIT;
 
 	if (sge->length <= CDMA_ATOMIC_LEN_8) {
 		memcpy((char *)wqe_ctl + SQE_ATOMIC_DATA_FIELD, &wr->faa.operand,
@@ -519,11 +502,38 @@ static uint32_t cdma_get_wqebb_cnt(dma_jfs_wr_t *wr,
 	sqe_ctl_len = cdma_get_ctl_len(wr->opcode);
 
 	normal_sge_num = cdma_get_normal_sge_num(wr->opcode, wqe_ctl);
-	wqebb_cnt = cdma_sq_cal_wqebb_num(sqe_ctl_len, normal_sge_num, CDMA_JFS_WQEBB);
+	wqebb_cnt =
+		cdma_sq_cal_wqebb_num(sqe_ctl_len, normal_sge_num, CDMA_JFS_WQEBB);
 
 	return wqebb_cnt;
 }
 
+static inline bool check_sq_overflow(struct cdma_u_jetty_queue *sq,
+				     uint32_t wqebb_cnt)
+{
+	return (sq->pi - sq->ci + wqebb_cnt) > sq->baseblk_cnt;
+}
+
+static int cdma_copy_to_sq(struct cdma_u_jetty_queue *sq, uint32_t wqebb_cnt,
+			   struct cdma_jfs_wqebb *tmp_sq)
+{
+	uint32_t remain = sq->baseblk_cnt - (sq->pi & sq->baseblk_mask);
+	uint32_t tail_cnt;
+	uint32_t head_cnt;
+
+	if (check_sq_overflow(sq, wqebb_cnt))
+		return -ENOMEM;
+
+	tail_cnt = remain > wqebb_cnt ? wqebb_cnt : remain;
+	head_cnt = wqebb_cnt - tail_cnt;
+
+	memcpy(sq->qbuf_curr, tmp_sq, tail_cnt * sizeof(*tmp_sq));
+
+	if (head_cnt)
+		memcpy(sq->qbuf, tmp_sq + tail_cnt, head_cnt * sizeof(*tmp_sq));
+
+	return 0;
+}
 
 static int cdma_post_one_wr(struct cdma_u_context *cdma_ctx,
 			    struct cdma_u_jetty_queue *sq, dma_jfs_wr_t *wr,
@@ -536,7 +546,8 @@ static int cdma_post_one_wr(struct cdma_u_context *cdma_ctx,
 
 	opcode = cdma_parse_jfs_opcode(wr->opcode);
 	if (opcode == CDMA_OPCODE_INVALID) {
-		CDMA_LOG_ERR("cdma jfs parse invalid opcode = %u.\n", (uint8_t)wr->opcode);
+		CDMA_LOG_ERR("cdma jfs parse invalid opcode = %u.\n",
+			     (uint8_t)wr->opcode);
 		return -EINVAL;
 	}
 
@@ -627,7 +638,8 @@ out:
 	return ret;
 }
 
-int cdma_u_post_jfs_wr(struct dma_jfs *jfs, dma_jfs_wr_t *wr, dma_jfs_wr_t **bad_wr)
+int cdma_u_post_jfs_wr(struct dma_jfs *jfs, dma_jfs_wr_t *wr,
+		       dma_jfs_wr_t **bad_wr)
 {
 	struct cdma_u_context *cdma_ctx;
 	struct cdma_u_jfs *cdma_jfs;

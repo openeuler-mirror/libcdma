@@ -200,7 +200,8 @@ static inline off_t get_mmap_offset(uint32_t idx, int page_size, uint32_t cmd)
 	return offset * page_size;
 }
 
-static inline void *cdma_update_ptr(uint8_t *ptr, uint32_t inc, uint8_t *qbuf, uint8_t *qbuf_end)
+static inline void *cdma_update_ptr(uint8_t *ptr, uint32_t inc, uint8_t *qbuf,
+				    uint8_t *qbuf_end)
 {
 	return ((ptr + inc) < qbuf_end) ?
 		(ptr + inc) : (qbuf + (ptr + inc - qbuf_end));

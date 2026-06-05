@@ -61,7 +61,6 @@ enum cdma_log_level cdma_log_get_level(const char *level_string)
 void cdma_getenv_log_level(void)
 {
 	char *level_str = getenv(CDMA_LOG_ENV_STR);
-
 	if (level_str == NULL)
 		return;
 
@@ -71,7 +70,6 @@ void cdma_getenv_log_level(void)
 	}
 
 	enum cdma_log_level log_level = cdma_log_get_level(level_str);
-
 	if (log_level != CDMA_VLOG_LEVEL_MAX) {
 		pthread_mutex_lock(&g_cdma_log_level.lock);
 		g_cdma_log_level.level = log_level;
@@ -95,7 +93,8 @@ int cdma_vlog(const char *function, int line, enum cdma_log_level level,
 
 	ret = vsnprintf(logmsg, MAX_LOG_LEN, newformat, va);
 	if (ret == -1) {
-		(void)printf("logmsg size exceeds MAX_LOG_LEN size :%d.\n", MAX_LOG_LEN);
+		(void)printf("logmsg size exceeds MAX_LOG_LEN size :%d.\n",
+			     MAX_LOG_LEN);
 		return ret;
 	}
 

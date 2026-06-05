@@ -59,11 +59,8 @@ static uint32_t cdma_get_devs_num(void)
 	DIR *cdev_dir;
 
 	cdev_dir = opendir(CDMA_CDEV_PATH);
-	if (cdev_dir == NULL) {
-		CDMA_LOG_ERR("cdma open dir %s failed, errno = %d.\n", CDMA_CDEV_PATH,
-			     errno);
+	if (cdev_dir == NULL)
 		return 0;
-	}
 
 	while ((dent = readdir(cdev_dir)) != NULL) {
 		if (dent->d_name[0] == '.')
@@ -98,8 +95,7 @@ static bool cdma_find_seid_in_eus(struct dma_device *dev,
 
 	for (i = 0; i < dev->attr.eu_num; i++) {
 		eus = &dev->attr.eus[i];
-		if (eus->eid.dw0 == eid->dw0 && eus->eid.dw1 == eid->dw1 &&
-		    eus->eid.dw2 == eid->dw2 && eus->eid.dw3 == eid->dw3) {
+		if (memcmp(&eus->eid, eid, sizeof(*eid)) == 0) {
 			memcpy(eu, eus, sizeof(*eus));
 			return true;
 		}
@@ -135,7 +131,7 @@ static int cdma_query_device_info(struct dma_device *dev)
 
 	ret = ioctl(dev->fd, CDMA_SYNC, &hdr);
 	if (ret) {
-		CDMA_LOG_ERR("ioctl cdma query device info failed, ret = %d, errno = %d, cmd = %u.\n",
+		CDMA_LOG_ERR("ioctl cdma query device info, ret = %d %d, cmd = %u.\n",
 			     ret, errno, hdr.command);
 		return ret;
 	}
@@ -172,17 +168,12 @@ struct dma_device *cdma_get_device_list(uint32_t *num_devices)
 	int ret;
 
 	*num_devices = cdma_get_devs_num();
-	if (*num_devices == 0) {
-		CDMA_LOG_ERR("cdma device num is 0.\n");
+	if (*num_devices == 0)
 		return NULL;
-	}
 
 	cdev_dir = opendir(CDMA_CDEV_PATH);
-	if (cdev_dir == NULL) {
-		CDMA_LOG_ERR("cdma open dir %s failed, errno = %d.\n", CDMA_CDEV_PATH,
-			     errno);
+	if (cdev_dir == NULL)
 		return NULL;
-	}
 
 	dev_list = (struct dma_device *)calloc(*num_devices, sizeof(*dev_list));
 	if (dev_list == NULL) {
@@ -194,12 +185,14 @@ struct dma_device *cdma_get_device_list(uint32_t *num_devices)
 		if (dent->d_name[0] == '.')
 			continue;
 
-		(void)snprintf(cdev_path, sizeof(cdev_path), "%s/%s", CDMA_CDEV_PATH, dent->d_name);
+		(void)snprintf(cdev_path, sizeof(cdev_path), "%s/%s", CDMA_CDEV_PATH,
+			       dent->d_name);
 		dev_list[i].fd = cdma_open_cdev(cdev_path);
 		if (dev_list[i].fd < 0)
 			continue;
 
-		(void)strncpy(dev_list[i].name, dent->d_name, CDMA_MAX_DEV_NAME_LEN - 1);
+		(void)strncpy(dev_list[i].name, dent->d_name,
+			      CDMA_MAX_DEV_NAME_LEN - 1);
 		ret = cdma_query_device_info(&dev_list[i]);
 		if (ret) {
 			close(dev_list[i].fd);

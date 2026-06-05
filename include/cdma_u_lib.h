@@ -120,7 +120,7 @@ typedef enum {
 	DMA_STATUS_INVAL,
 } dma_status;
 
-typedef enum{
+typedef enum {
 	DMA_AEQE_TYPE_JFC,
 	DMA_AEQE_TYPE_JFS,
 	DMA_AEQE_TYPE_INVALID,
@@ -169,7 +169,8 @@ void dma_delete_context(struct dma_context *ctx);
  * @cfg: DMA queue configuration information pointer;
  * Return: DMA queue structure pointer
  */
-struct dma_queue *dma_alloc_queue(struct dma_context *ctx, struct queue_cfg *cfg);
+struct dma_queue *dma_alloc_queue(struct dma_context *ctx,
+				  struct queue_cfg *cfg);
 
 /**
  * dma_free_queue - Free DMA queue
@@ -291,7 +292,8 @@ int dma_wait_queue(struct dma_queue *queue, uint32_t cr_cnt, int timeout,
  * dma_wait_ae - Wait for asynchronous events
  * @ctx: DMA context pointer;
  * @aeqe: asynchronous event queue entity pointer;
- * Return: operation result, 0 on 0 event success, 1 on 1 event success, others on failed
+ * Return: operation result, 0 on 0 event success, 1 on 1 event success, others
+ * on failed
  */
 int dma_wait_ae(struct dma_context *ctx, struct dma_aeqe *aeqe);
 
