@@ -128,8 +128,8 @@ static void cdma_bitmap_free_idx(uint64_t *bitmap, uint32_t bitmap_cnt,
 void *cdma_u_alloc_sw_db(struct cdma_u_context *ctx)
 {
 	struct cdma_u_db_page *db_page;
+	uint32_t npos = 0;
 	void *db = NULL;
-	uint32_t npos;
 
 	pthread_mutex_lock(&ctx->page_mutex);
 	for (db_page = ctx->page; db_page != NULL; db_page = db_page->next) {

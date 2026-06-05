@@ -133,6 +133,7 @@ struct dma_seg *dma_import_seg(struct dma_seg_cfg *cfg)
 		CDMA_LOG_ERR("import seg parameter is invalid.\n");
 		return NULL;
 	}
+
 	return cdma_import_seg(cfg);
 }
 
