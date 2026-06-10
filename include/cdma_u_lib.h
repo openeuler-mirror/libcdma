@@ -92,7 +92,7 @@ struct dma_seg_cfg {
 	uint64_t addr;
 	uint64_t len;
 	uint32_t token_value;
-	uint32_t tid; /* used by import segment, data valid only in bit 0-19*/
+	uint32_t tid; /* used by import segment, data valid only in bit 0-19 */
 	bool token_value_valid;
 	uint32_t rsv_bitmap;
 	uint32_t rsvd[4];
@@ -281,7 +281,7 @@ int dma_poll_queue(struct dma_queue *queue, uint32_t cr_cnt, struct dma_cr *cr);
  * dma_wait_queue - Wait for completion event
  * @queue: DMA queue pointer;
  * @cr_cnt: number of completion record;
- * @timeout: timeout time for waiting ;
+ * @timeout: timeout time for waiting;
  * @cr: completion record pointer;
  * Return: operation result, >0 on success, others on failed
  */

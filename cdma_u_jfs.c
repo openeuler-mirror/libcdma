@@ -10,7 +10,6 @@
 #include "cdma_u_db.h"
 #include "cdma_u_log.h"
 #include "cdma_u_cmd.h"
-#include "cdma_u_log.h"
 #include "cdma_u_jfc.h"
 #include "cdma_u_jfs.h"
 
@@ -90,10 +89,10 @@ static int cdma_verify_jfs_param(struct dma_context *ctx,
 
 	if (!cfg->depth || cfg->depth > caps->max_jfs_depth ||
 		cfg->max_sge > caps->max_jfs_sge) {
-		CDMA_LOG_ERR("jfs param is invalid, depth = %u, sge = %u, \
-					 max_depth = %u, max_jfs_sge = %u.\n",
-					 cfg->depth, cfg->max_sge, caps->max_jfs_depth,
-					 caps->max_jfs_sge);
+		CDMA_LOG_ERR("jfs param is invalid, depth = %u, sge = %u,"
+			     " max_depth = %u, max_jfs_sge = %u.\n",
+			     cfg->depth, cfg->max_sge, caps->max_jfs_depth,
+			     caps->max_jfs_sge);
 		return -EINVAL;
 	}
 
@@ -263,7 +262,6 @@ static int cdma_fill_multi_sge(struct cdma_jfs_sqe_ctl *wqe_ctl, dma_jfs_wr_t *w
 
 static int cdma_u_fill_write_sqe(struct cdma_jfs_sqe_ctl *wqe_ctl,
 				 dma_jfs_wr_t *wr)
-
 {
 	struct cdma_token_info *token_info;
 	struct cdma_wqe_sge *sge;

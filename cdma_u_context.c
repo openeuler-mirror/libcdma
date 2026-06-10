@@ -21,7 +21,6 @@
 static void cdma_u_init_context(struct cdma_u_context *u_ctx,
 				struct cdma_create_context_args *info)
 {
-#define CDMA_JFC_DB_OFFSET 0
 	u_ctx->page_size = sysconf(_SC_PAGESIZE);
 	u_ctx->db.id = CDMA_JFC_DB_OFFSET;
 	u_ctx->db.type = CDMA_MMAP_JFC_PAGE;

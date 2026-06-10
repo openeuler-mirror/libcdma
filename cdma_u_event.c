@@ -64,7 +64,7 @@ static int cdma_cmd_get_async_event(struct cdma_u_context *u_ctx,
 		return -EFAULT;
 	}
 
-	return EVENT_EVENT_NUM; // return event num;
+	return EVENT_EVENT_NUM;
 }
 
 int cdma_poll_queue(struct dma_queue *queue, uint32_t cr_cnt, struct dma_cr *cr)

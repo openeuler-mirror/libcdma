@@ -391,7 +391,7 @@ int cdma_u_cmd_delete_jfs(struct dma_jfs *jfs)
 
 	if (!jfs || !jfs->dma_ctx || !jfs->dma_ctx->dma_dev ||
 		jfs->dma_ctx->dma_dev->fd < 0) {
-		CDMA_LOG_ERR("delete jfs cmd parameter invalid");
+		CDMA_LOG_ERR("delete jfs cmd parameter invalid\n");
 		return -EINVAL;
 	}
 

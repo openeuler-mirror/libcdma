@@ -6,8 +6,8 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  */
 
-#ifndef __CDMA_SEGMENT_H__
-#define __CDMA_SEGMENT_H__
+#ifndef __CDMA_U_SEGMENT_H__
+#define __CDMA_U_SEGMENT_H__
 #include "cdma_u_lib.h"
 
 struct dma_seg *cdma_register_seg(struct dma_context *ctx, struct dma_seg_cfg *cfg);

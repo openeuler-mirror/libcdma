@@ -55,7 +55,7 @@ static int cdma_u_cmd_delete_queue(struct cdma_u_queue *cdma_queue)
 	int ret;
 
 	if (!queue->ctx || !queue->ctx->dma_dev || queue->ctx->dma_dev->fd < 0) {
-		CDMA_LOG_ERR("delete jfs cmd parameter invalid.\n");
+		CDMA_LOG_ERR("delete queue cmd parameter invalid\n");
 		return -EINVAL;
 	}
 

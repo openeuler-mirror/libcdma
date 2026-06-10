@@ -39,7 +39,7 @@ static int cdma_open_cdev(char *path)
 	}
 
 	if (strncmp(real_path, CDMA_CDEV_PATH, len) != 0) {
-		CDMA_LOG_ERR("cdma real path do not have the same prefix.\n");
+		CDMA_LOG_ERR("cdma real path does not have the same prefix\n");
 		free(real_path);
 		return -EIO;
 	}

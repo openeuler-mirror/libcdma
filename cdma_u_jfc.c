@@ -207,10 +207,10 @@ static enum jfc_poll_state cdma_get_cr_status(uint8_t src_status,
 					      uint8_t substatus,
 					      enum dma_cr_status *cr_status)
 {
-struct cdma_cqe_status {
-	bool is_valid;
-	enum dma_cr_status cr_status;
-};
+	struct cdma_cqe_status {
+		bool is_valid;
+		enum dma_cr_status cr_status;
+	};
 
 	static const struct cdma_cqe_status
 		map[CDMA_CQE_STATUS_NUM][CDMA_CQE_SUB_STATUS_NUM] = {
@@ -257,8 +257,8 @@ struct cdma_cqe_status {
 		return JFC_OK;
 	}
 
-	CDMA_LOG_ERR("cqe_status (%u) substatus (%u) is invalid.", src_status,
-				 substatus);
+	CDMA_LOG_ERR("cqe_status (%u) substatus (%u) is invalid\n", src_status,
+		     substatus);
 
 	return JFC_POLL_ERR;
 }
@@ -290,7 +290,7 @@ static enum jfc_poll_state cdma_parse_cqe_for_jfc(struct cdma_u_jfc_cqe *cqe,
 
 	queue = cdma_u_update_jetty_idx(cqe);
 	if (!queue) {
-		CDMA_LOG_ERR("update jetty idx failed.");
+		CDMA_LOG_ERR("update jetty idx failed\n");
 		return JFC_POLL_ERR;
 	}
 

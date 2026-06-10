@@ -6,8 +6,8 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  */
 
-#ifndef __CDMA_CONTEXT_H__
-#define __CDMA_CONTEXT_H__
+#ifndef __CDMA_U_CONTEXT_H__
+#define __CDMA_U_CONTEXT_H__
 #include "cdma_u_lib.h"
 
 struct dma_context *cdma_create_context(struct dma_device *dma_dev);
