@@ -53,7 +53,7 @@ static int cdma_register_kernel_seg(struct dma_context *ctx,
 
 	ret = ioctl(ctx->dma_dev->fd, CDMA_SYNC, &hdr);
 	if (ret) {
-		CDMA_LOG_ERR("ioctl cdma register seg, ret = %d %d, cmd = %u.\n", ret,
+		CDMA_LOG_ERR("ioctl cdma register seg, ret = %d %d, cmd = %u\n", ret,
 			     errno, hdr.command);
 		return ret;
 	}
@@ -73,7 +73,7 @@ struct dma_seg *cdma_register_seg(struct dma_context *ctx,
 
 	seg = (struct dma_seg *)calloc(1, sizeof(*seg));
 	if (!seg) {
-		CDMA_LOG_ERR("cdma alloc seg failed.\n");
+		CDMA_LOG_ERR("cdma alloc seg failed\n");
 		return NULL;
 	}
 
@@ -84,7 +84,7 @@ struct dma_seg *cdma_register_seg(struct dma_context *ctx,
 	ret = ummu_grant(seg->tid, (void *)seg->sva, seg->len, MAPT_PERM_RW,
 					 &seg_attr);
 	if (ret) {
-		CDMA_LOG_ERR("cdma grant seg failed, ret = %d.\n", ret);
+		CDMA_LOG_ERR("cdma grant seg failed, ret = %d\n", ret);
 		goto free_seg;
 	}
 
@@ -117,7 +117,7 @@ static void cdma_unregister_kernel_seg(struct dma_context *ctx,
 
 	ret = ioctl(ctx->dma_dev->fd, CDMA_SYNC, &hdr);
 	if (ret)
-		CDMA_LOG_ERR("ioctl cdma unregister seg, ret = %d %d, cmd = %u.\n", ret,
+		CDMA_LOG_ERR("ioctl cdma unregister seg, ret = %d %d, cmd = %u\n", ret,
 			     errno, hdr.command);
 }
 
@@ -129,7 +129,7 @@ void cdma_unregister_seg(struct dma_context *ctx, struct dma_seg *seg)
 
 	ret = ummu_ungrant(seg->tid, (void *)seg->sva, seg->len);
 	if (ret)
-		CDMA_LOG_ERR("cdma ungrant seg failed, ret = %d.\n", ret);
+		CDMA_LOG_ERR("cdma ungrant seg failed, ret = %d\n", ret);
 
 	free(seg);
 }
@@ -140,7 +140,7 @@ struct dma_seg *cdma_import_seg(struct dma_seg_cfg *cfg)
 
 	seg = (struct dma_seg *)calloc(1, sizeof(*seg));
 	if (!seg) {
-		CDMA_LOG_ERR("cdma alloc seg when import failed.\n");
+		CDMA_LOG_ERR("cdma alloc seg when import failed\n");
 		return NULL;
 	}
 

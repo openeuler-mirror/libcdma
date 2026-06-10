@@ -20,7 +20,7 @@ static int cdma_u_cmd_create_queue(struct dma_context *ctx,
 	int ret;
 
 	if (!ctx->dma_dev || ctx->dma_dev->fd < 0) {
-		CDMA_LOG_ERR("create queue cmd parameter invalid.\n");
+		CDMA_LOG_ERR("create queue cmd parameter invalid\n");
 		return -EINVAL;
 	}
 
@@ -36,7 +36,7 @@ static int cdma_u_cmd_create_queue(struct dma_context *ctx,
 
 	ret = ioctl(ctx->dma_dev->fd, CDMA_SYNC, &hdr);
 	if (ret) {
-		CDMA_LOG_ERR("ioctl in create queue, ret = %d %d, cmd = %u.\n", ret,
+		CDMA_LOG_ERR("ioctl in create queue, ret = %d %d, cmd = %u\n", ret,
 			     errno, hdr.command);
 		return ret;
 	}
@@ -67,7 +67,7 @@ static int cdma_u_cmd_delete_queue(struct cdma_u_queue *cdma_queue)
 
 	ret = ioctl(queue->ctx->dma_dev->fd, CDMA_SYNC, &hdr);
 	if (ret)
-		CDMA_LOG_ERR("ioctl in delete queue, ret = %d %d, cmd = %u.\n", ret,
+		CDMA_LOG_ERR("ioctl in delete queue, ret = %d %d, cmd = %u\n", ret,
 			     errno, hdr.command);
 
 	return ret;
@@ -120,18 +120,18 @@ static int cdma_u_alloc_jfc_res(struct dma_context *ctx,
 
 	jfc_cfg->jfce = cdma_u_create_jfce(ctx);
 	if (!jfc_cfg->jfce) {
-		CDMA_LOG_ERR("cdma jfce create failed.\n");
+		CDMA_LOG_ERR("cdma jfce create failed\n");
 		return ret;
 	}
 
 	jfc = cdma_u_create_jfc(ctx, jfc_cfg);
 	if (!jfc) {
-		CDMA_LOG_ERR("cdma jfc create failed.\n");
+		CDMA_LOG_ERR("cdma jfc create failed\n");
 		goto delete_jfce;
 	}
 
 	if (cfg->event_mode && cdma_u_rearm_jfc(jfc, false) != DMA_STATUS_OK) {
-		CDMA_LOG_ERR("cdma rearm jfc failed.\n");
+		CDMA_LOG_ERR("cdma rearm jfc failed\n");
 		ret = -EFAULT;
 		goto delete_jfc;
 	}
@@ -165,7 +165,7 @@ static int cdma_u_create_queue(struct dma_context *ctx, struct queue_cfg *cfg,
 	int ret;
 
 	if (!ctx || !cfg || !ctx->dma_dev) {
-		CDMA_LOG_ERR("create queue parameter invalid.\n");
+		CDMA_LOG_ERR("create queue parameter invalid\n");
 		return -EINVAL;
 	}
 
@@ -178,14 +178,14 @@ static int cdma_u_create_queue(struct dma_context *ctx, struct queue_cfg *cfg,
 
 	ret = cdma_u_alloc_jfc_res(ctx, cdma_queue, cfg, &jfc_cfg);
 	if (ret) {
-		CDMA_LOG_ERR("cdma alloc jfc res, ret = %d, seid = %u, deid = %u.\n",
+		CDMA_LOG_ERR("cdma alloc jfc res, ret = %d, seid = %u, deid = %u\n",
 			     ret, tp_cfg.seid, tp_cfg.deid);
 		return ret;
 	}
 
 	cdma_queue->cdma_tp = cdma_u_create_ctp(ctx, &tp_cfg);
 	if (!cdma_queue->cdma_tp) {
-		CDMA_LOG_ERR("cdma tp create failed, seid = %u, deid = %u.\n",
+		CDMA_LOG_ERR("cdma tp create failed, seid = %u, deid = %u\n",
 			     tp_cfg.seid, tp_cfg.deid);
 		goto delete_jfc_res;
 	}
@@ -195,7 +195,7 @@ static int cdma_u_create_queue(struct dma_context *ctx, struct queue_cfg *cfg,
 
 	cdma_queue->cdma_jfs = cdma_u_create_jfs(ctx, &jfs_cfg);
 	if (!cdma_queue->cdma_jfs) {
-		CDMA_LOG_ERR("cdma jfs create failed, seid = %u, deid = %u.\n",
+		CDMA_LOG_ERR("cdma jfs create failed, seid = %u, deid = %u\n",
 			     tp_cfg.seid, tp_cfg.deid);
 		goto delete_tp;
 	}
@@ -229,20 +229,20 @@ struct dma_queue *cdma_alloc_queue(struct dma_context *ctx,
 
 	cdma_queue = (struct cdma_u_queue *)calloc(1, sizeof(*cdma_queue));
 	if (!cdma_queue) {
-		CDMA_LOG_ERR("cdma queue alloc failed.\n");
+		CDMA_LOG_ERR("cdma queue alloc failed\n");
 		return NULL;
 	}
 
 	ret = cdma_u_cmd_create_queue(ctx, cdma_queue, cfg);
 	if (ret) {
-		CDMA_LOG_ERR("cdma queue create failed, ret = %d.\n", ret);
+		CDMA_LOG_ERR("cdma queue create failed, ret = %d\n", ret);
 		free(cdma_queue);
 		return NULL;
 	}
 
 	ret = cdma_u_create_queue(ctx, cfg, cdma_queue->handle, cdma_queue);
 	if (ret) {
-		CDMA_LOG_ERR("cdma create queue failed, ret = %d.\n", ret);
+		CDMA_LOG_ERR("cdma create queue failed, ret = %d\n", ret);
 		(void)cdma_u_cmd_delete_queue(cdma_queue);
 		free(cdma_queue);
 		return NULL;

@@ -18,19 +18,19 @@ static int cdma_u_check_jfc_cfg(struct dma_context *ctx, dma_jfc_cfg_t *cfg)
 
 	if (ctx == NULL || ctx->dma_dev == NULL || cfg == NULL ||
 	    cfg->jfce == NULL) {
-		CDMA_LOG_ERR("jfc ctx or cfg is null.\n");
+		CDMA_LOG_ERR("jfc ctx or cfg is null\n");
 		return -EINVAL;
 	}
 
 	cap = &ctx->dma_dev->attr.dev_cap;
 	if (cfg->depth == 0 || cfg->depth > cap->max_jfc_depth) {
-		CDMA_LOG_ERR("invalid jfc cfg depth = %u, cap depth = %u.\n",
+		CDMA_LOG_ERR("invalid jfc cfg depth = %u, cap depth = %u\n",
 			      cfg->depth, cap->max_jfc_depth);
 		return -EINVAL;
 	}
 
 	if (cfg->ceqn >= cap->ceq_cnt) {
-		CDMA_LOG_ERR("invalid cfg ceqn = %u, cap ceq_cnt = %u.\n",
+		CDMA_LOG_ERR("invalid cfg ceqn = %u, cap ceq_cnt = %u\n",
 			      cfg->ceqn, cap->ceq_cnt);
 		return -EINVAL;
 	}
@@ -49,13 +49,13 @@ static int cdma_u_alloc_jfc_buf(struct cdma_u_context *cdma_ctx,
 	ret = cdma_u_alloc_queue_buf(&jfc->cq, depth, cdma_ctx->cqe_size,
 								 CDMA_HW_PAGE_SIZE, false);
 	if (ret) {
-		CDMA_LOG_ERR("alloc user jfc wqe buf failed, ret = %d.\n", ret);
+		CDMA_LOG_ERR("alloc user jfc wqe buf failed, ret = %d\n", ret);
 		return ret;
 	}
 
 	jfc->sw_db = (uint32_t *)cdma_u_alloc_sw_db(cdma_ctx);
 	if (!jfc->sw_db) {
-		CDMA_LOG_ERR("alloc user jfc sw db failed.\n");
+		CDMA_LOG_ERR("alloc user jfc sw db failed\n");
 		cdma_u_free_queue_buf(&jfc->cq);
 		return -ENOMEM;
 	}
@@ -102,7 +102,7 @@ static int cdma_cmd_create_jfc(struct dma_context *ctx, struct cdma_u_jfc *jfc,
 	int ret;
 
 	if (ctx->dma_dev->fd < 0) {
-		CDMA_LOG_ERR("invalid parameter.\n");
+		CDMA_LOG_ERR("invalid parameter\n");
 		return -EINVAL;
 	}
 
@@ -124,7 +124,7 @@ static int cdma_cmd_create_jfc(struct dma_context *ctx, struct cdma_u_jfc *jfc,
 
 	ret = ioctl(ctx->dma_dev->fd, CDMA_SYNC, &hdr);
 	if (ret != 0) {
-		CDMA_LOG_ERR("ioctl in create jfc, ret = %d %d, cmd = %u.\n", ret,
+		CDMA_LOG_ERR("ioctl in create jfc, ret = %d %d, cmd = %u\n", ret,
 			     errno, hdr.command);
 		return ret;
 	}
@@ -141,7 +141,7 @@ static int cdma_cmd_delete_jfc(struct dma_jfc *jfc)
 	int ret;
 
 	if (jfc->dma_ctx->dma_dev->fd < 0) {
-		CDMA_LOG_ERR("invalid fd parameter.\n");
+		CDMA_LOG_ERR("invalid fd parameter\n");
 		return -EINVAL;
 	}
 
@@ -154,7 +154,7 @@ static int cdma_cmd_delete_jfc(struct dma_jfc *jfc)
 
 	ret = ioctl(jfc->dma_ctx->dma_dev->fd, CDMA_SYNC, &hdr);
 	if (ret != 0) {
-		CDMA_LOG_ERR("ioctl in cdma_delete_jfc, ret = %d %d, cmd = %u.\n", ret,
+		CDMA_LOG_ERR("ioctl in cdma_delete_jfc, ret = %d %d, cmd = %u\n", ret,
 			     errno, hdr.command);
 		return ret;
 	}
@@ -304,7 +304,7 @@ static enum jfc_poll_state cdma_parse_cqe_for_jfc(struct cdma_u_jfc_cqe *cqe,
 
 	if (cqe->status) {
 		CDMA_LOG_WARN("get sq %u cqe status abnormal, ci = %u,"
-			      " pi = %u, status = %u, substatus = %u.\n", queue->idx,
+			      " pi = %u, status = %u, substatus = %u\n", queue->idx,
 			      queue->ci, queue->pi, cqe->status, cqe->substatus);
 	}
 
@@ -334,7 +334,7 @@ static enum jfc_poll_state cdma_u_poll_one(struct cdma_u_jfc *cdma_jfc,
 	status = cr->status;
 	if (status == DMA_CR_WR_FLUSH_ERR_DONE ||
 	    status == DMA_CR_WR_SUSPEND_DONE) {
-		CDMA_LOG_INFO("poll cr flush/suspend done, jfc_id = %u, status = %u.\n",
+		CDMA_LOG_INFO("poll cr flush/suspend done, jfc_id = %u, status = %u\n",
 			       cdma_jfc->base.jfc_id, status);
 		return JFC_EMPTY;
 	}
@@ -352,7 +352,7 @@ static int cdma_cmd_wait_jfc(int jfce_fd, uint32_t jfc_cnt, int time_out)
 
 	ret = ioctl(jfce_fd, CDMA_CMD_WAIT_JFC, &arg);
 	if (ret) {
-		CDMA_LOG_ERR("wait jfc ioctl, ret = %d %d.\n", ret, errno);
+		CDMA_LOG_ERR("wait jfc ioctl, ret = %d %d\n", ret, errno);
 		return -EFAULT;
 	}
 
@@ -377,14 +377,14 @@ dma_jfce_t *cdma_u_create_jfce(struct dma_context *ctx)
 
 	jfce = (dma_jfce_t *)calloc(1, sizeof(*jfce));
 	if (!jfce) {
-		CDMA_LOG_ERR("alloc jfce failed.\n");
+		CDMA_LOG_ERR("alloc jfce failed\n");
 		return NULL;
 	}
 
 	jfce->dma_ctx = ctx;
 	ret = cdma_cmd_create_jfce(ctx, jfce);
 	if (ret) {
-		CDMA_LOG_ERR("cmd create jfce failed, ret = %d.\n", ret);
+		CDMA_LOG_ERR("cmd create jfce failed, ret = %d\n", ret);
 		free(jfce);
 		return NULL;
 	}
@@ -395,7 +395,7 @@ dma_jfce_t *cdma_u_create_jfce(struct dma_context *ctx)
 dma_status cdma_u_delete_jfce(dma_jfce_t *jfce)
 {
 	if (jfce == NULL || jfce->fd < 0) {
-		CDMA_LOG_ERR("invalid parameter.\n");
+		CDMA_LOG_ERR("invalid parameter\n");
 		return DMA_STATUS_INVAL;
 	}
 
@@ -419,24 +419,24 @@ dma_jfc_t *cdma_u_create_jfc(struct dma_context *ctx, dma_jfc_cfg_t *cfg)
 
 	cdma_jfc = (struct cdma_u_jfc *)calloc(1, sizeof(*cdma_jfc));
 	if (!cdma_jfc) {
-		CDMA_LOG_ERR("alloc user cdma jfc memory failed.\n");
+		CDMA_LOG_ERR("alloc user cdma jfc memory failed\n");
 		return NULL;
 	}
 
 	if (pthread_spin_init(&cdma_jfc->cq.lock, PTHREAD_PROCESS_PRIVATE)) {
-		CDMA_LOG_ERR("init user cdma jfc spinlock failed.\n");
+		CDMA_LOG_ERR("init user cdma jfc spinlock failed\n");
 		goto err_init_lock;
 	}
 
 	ret = cdma_u_alloc_jfc_buf(cdma_ctx, cfg, cdma_jfc);
 	if (ret) {
-		CDMA_LOG_ERR("alloc jfc buf failed, ret = %d.\n", ret);
+		CDMA_LOG_ERR("alloc jfc buf failed, ret = %d\n", ret);
 		goto err_alloc_jfc;
 	}
 
 	ret = cdma_cmd_create_jfc(ctx, cdma_jfc, cfg);
 	if (ret) {
-		CDMA_LOG_ERR("create jfc failed, ret = %d.\n", ret);
+		CDMA_LOG_ERR("create jfc failed, ret = %d\n", ret);
 		goto err_create_jfc;
 	}
 
@@ -460,7 +460,7 @@ dma_status cdma_u_delete_jfc(dma_jfc_t *jfc)
 	struct cdma_u_jfc *cdma_jfc;
 
 	if (jfc == NULL || jfc->dma_ctx == NULL) {
-		CDMA_LOG_ERR("invalid parameter.\n");
+		CDMA_LOG_ERR("invalid parameter\n");
 		return DMA_STATUS_INVAL;
 	}
 
@@ -468,7 +468,7 @@ dma_status cdma_u_delete_jfc(dma_jfc_t *jfc)
 	cdma_jfc = to_cdma_u_jfc(jfc);
 
 	if (cdma_cmd_delete_jfc(jfc))
-		CDMA_LOG_WARN("delete jfc cmd failed.\n");
+		CDMA_LOG_WARN("delete jfc cmd failed\n");
 
 	cdma_u_free_jfc_buf(cdma_ctx, cdma_jfc);
 
@@ -486,7 +486,7 @@ int cdma_u_poll_jfc(dma_jfc_t *jfc, uint32_t cr_cnt, struct dma_cr *cr)
 	uint32_t npolled;
 
 	if (jfc == NULL) {
-		CDMA_LOG_ERR("invalid parameter.\n");
+		CDMA_LOG_ERR("invalid parameter\n");
 		return -EINVAL;
 	}
 
@@ -510,7 +510,7 @@ int cdma_u_poll_jfc(dma_jfc_t *jfc, uint32_t cr_cnt, struct dma_cr *cr)
 int cdma_u_wait_jfc(dma_jfce_t *jfce, uint32_t jfc_cnt, int time_out)
 {
 	if (jfce == NULL || jfce->fd < 0 || jfc_cnt == 0) {
-		CDMA_LOG_ERR("invalid parameter.\n");
+		CDMA_LOG_ERR("invalid parameter\n");
 		return -1;
 	}
 
@@ -522,7 +522,7 @@ void cdma_u_ack_jfc(dma_jfc_t *jfc, uint32_t events)
 	struct cdma_u_jfc *cdma_jfc;
 
 	if (!jfc) {
-		CDMA_LOG_ERR("invalid parameter.\n");
+		CDMA_LOG_ERR("invalid parameter\n");
 		return;
 	}
 
@@ -540,7 +540,7 @@ dma_status cdma_u_rearm_jfc(dma_jfc_t *jfc, bool solicited_only)
 	struct cdma_jfc_db db;
 
 	if (jfc == NULL || jfc->dma_ctx == NULL) {
-		CDMA_LOG_ERR("invalid parameter.\n");
+		CDMA_LOG_ERR("invalid parameter\n");
 		return DMA_STATUS_INVAL;
 	}
 
@@ -571,7 +571,7 @@ void cdma_u_clean_jfc(dma_jfc_t *jfc, uint32_t jetty_id)
 	uint32_t pi;
 
 	if (jfc == NULL) {
-		CDMA_LOG_ERR("invalid parameter.\n");
+		CDMA_LOG_ERR("invalid parameter\n");
 		return;
 	}
 

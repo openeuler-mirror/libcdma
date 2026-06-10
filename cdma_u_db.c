@@ -102,7 +102,7 @@ static int cdma_bitmap_use_idx(uint64_t *bitmap, uint32_t bitmap_cnt,
 	*idx = (i << CDMA_BITS_PER_LONG_SHIFT) + bit_num - 1;
 
 	if (*idx >= n_bits) {
-		CDMA_LOG_ERR("idx is larger than n_bits!.\n");
+		CDMA_LOG_ERR("idx is larger than n_bits!\n");
 		return -ENOMEM;
 	}
 
@@ -209,7 +209,7 @@ int cdma_u_alloc_db(struct dma_context *ctx, struct cdma_u_doorbell *db)
 	db->addr = mmap(NULL, cdma_ctx->page_size, PROT_READ | PROT_WRITE,
 			MAP_SHARED, ctx->dma_dev->fd, offset);
 	if (db->addr == MAP_FAILED) {
-		CDMA_LOG_ERR("mmap doorbell page failed, id = %u, type = %u.\n",
+		CDMA_LOG_ERR("mmap doorbell page failed, id = %u, type = %u\n",
 			      db->id, db->type);
 		return -EINVAL;
 	}
@@ -224,7 +224,7 @@ void cdma_u_free_db(struct dma_context *ctx, struct cdma_u_doorbell *db)
 	struct cdma_u_context *cdma_ctx;
 
 	if (db->addr == MAP_FAILED || db->addr == NULL) {
-		CDMA_LOG_ERR("invalid parameter.\n");
+		CDMA_LOG_ERR("invalid parameter\n");
 		return;
 	}
 

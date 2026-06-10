@@ -28,12 +28,12 @@ static int cdma_open_cdev(char *path)
 
 	real_path = realpath(path, NULL);
 	if (real_path == NULL) {
-		CDMA_LOG_ERR("cdma get realpath from %s failed.\n", path);
+		CDMA_LOG_ERR("cdma get realpath from %s failed\n", path);
 		return -EIO;
 	}
 
 	if (strlen(real_path) <= len) {
-		CDMA_LOG_ERR("cdma real path is too short.\n");
+		CDMA_LOG_ERR("cdma real path is too short\n");
 		free(real_path);
 		return -EIO;
 	}
@@ -46,7 +46,7 @@ static int cdma_open_cdev(char *path)
 
 	fd = open(real_path, O_RDWR);
 	if (fd < 0)
-		CDMA_LOG_ERR("cdma open %s failed, errno = %d.\n", real_path, errno);
+		CDMA_LOG_ERR("cdma open %s failed, errno = %d\n", real_path, errno);
 
 	free(real_path);
 	return fd;
@@ -131,14 +131,14 @@ static int cdma_query_device_info(struct dma_device *dev)
 
 	ret = ioctl(dev->fd, CDMA_SYNC, &hdr);
 	if (ret) {
-		CDMA_LOG_ERR("ioctl cdma query device info, ret = %d %d, cmd = %u.\n",
+		CDMA_LOG_ERR("ioctl cdma query device info, ret = %d %d, cmd = %u\n",
 			     ret, errno, hdr.command);
 		return ret;
 	}
 
 	eu_num = info.out.attr.eu_num;
 	if (eu_num == 0 || eu_num > CDMA_MAX_EU_NUM) {
-		CDMA_LOG_ERR("cdma eu num %u is invalid.\n", eu_num);
+		CDMA_LOG_ERR("cdma eu num %u is invalid\n", eu_num);
 		return -EINVAL;
 	}
 
@@ -150,7 +150,7 @@ static int cdma_query_device_info(struct dma_device *dev)
 
 	for (i = 0; i < eu_num; i++) {
 		CDMA_LOG_INFO(
-			"cdma query eus[%d], upi = 0x%x, eid = 0x%x, eid_idx = 0x%x.\n", i,
+			"cdma query eus[%d], upi = 0x%x, eid = 0x%x, eid_idx = 0x%x\n", i,
 			dev->attr.eus[i].upi, dev->attr.eus[i].eid.dw0,
 			dev->attr.eus[i].eid_idx);
 	}
@@ -177,7 +177,7 @@ struct dma_device *cdma_get_device_list(uint32_t *num_devices)
 
 	dev_list = (struct dma_device *)calloc(*num_devices, sizeof(*dev_list));
 	if (dev_list == NULL) {
-		CDMA_LOG_ERR("alloc dev_list failed.\n");
+		CDMA_LOG_ERR("alloc dev_list failed\n");
 		goto out;
 	}
 
@@ -205,14 +205,14 @@ struct dma_device *cdma_get_device_list(uint32_t *num_devices)
 	}
 
 	if (i != *num_devices) {
-		CDMA_LOG_WARN("%u cdma devices are online, but %u devices are ready.\n",
+		CDMA_LOG_WARN("%u cdma devices are online, but %u devices are ready\n",
 			      *num_devices, i);
 		*num_devices = i;
 	}
 
 out:
 	if (closedir(cdev_dir) < 0)
-		CDMA_LOG_ERR("close dir %s\n failed", CDMA_CDEV_PATH);
+		CDMA_LOG_ERR("failed to close dir: %s\n", CDMA_CDEV_PATH);
 
 	return dev_list;
 }

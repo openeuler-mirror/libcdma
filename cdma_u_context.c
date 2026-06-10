@@ -42,7 +42,7 @@ static int cdma_create_kernel_context(struct cdma_u_context *u_ctx)
 
 	ret = ioctl(u_ctx->dma_ctx.dma_dev->fd, CDMA_SYNC, &hdr);
 	if (ret != 0) {
-		CDMA_LOG_ERR("ioctl cdma create kernel ctx, ret = %d %d, cmd = %u.\n",
+		CDMA_LOG_ERR("ioctl cdma create kernel ctx, ret = %d %d, cmd = %u\n",
 			     ret, errno, hdr.command);
 		return ret;
 	}
@@ -69,7 +69,7 @@ static void cdma_delete_kernel_context(struct cdma_u_context *u_ctx)
 
 	ret = ioctl(u_ctx->dma_ctx.dma_dev->fd, CDMA_SYNC, &hdr);
 	if (ret != 0) {
-		CDMA_LOG_ERR("ioctl cdma delete kernel ctx, ret = %d %d, cmd = %u.\n",
+		CDMA_LOG_ERR("ioctl cdma delete kernel ctx, ret = %d %d, cmd = %u\n",
 			     ret, errno, hdr.command);
 		return;
 	}
@@ -89,24 +89,24 @@ struct dma_context *cdma_create_context(struct dma_device *dma_dev)
 	ctx->dma_dev = dma_dev;
 
 	if (pthread_mutex_init(&u_ctx->page_mutex, NULL)) {
-		CDMA_LOG_ERR("init page_mutex failed.\n");
+		CDMA_LOG_ERR("init page_mutex failed\n");
 		goto free_u_ctx;
 	}
 
 	ret = ummu_allocate_tid(&tid_attr, &ctx->tid);
 	if (ret) {
-		CDMA_LOG_ERR("ummu_allocate_tid failed, ret = %d.\n", ret);
+		CDMA_LOG_ERR("ummu_allocate_tid failed, ret = %d\n", ret);
 		goto mutex_destroy;
 	}
 
 	ret = cdma_create_kernel_context(u_ctx);
 	if (ret) {
-		CDMA_LOG_ERR("cdma_create_kernel_context failed, ret = %d.\n", ret);
+		CDMA_LOG_ERR("cdma_create_kernel_context failed, ret = %d\n", ret);
 		goto free_tid;
 	}
 
 	if (cdma_u_alloc_db(&u_ctx->dma_ctx, &u_ctx->db)) {
-		CDMA_LOG_ERR("alloc jfc db failed.\n");
+		CDMA_LOG_ERR("alloc jfc db failed\n");
 		goto del_kernel_ctx;
 	}
 
