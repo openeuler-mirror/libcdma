@@ -17,14 +17,14 @@ void *cdma_u_alloc_buf(uint32_t buf_size)
 	buf = mmap(NULL, buf_size, PROT_READ | PROT_WRITE,
 			   MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 	if (buf == MAP_FAILED) {
-		CDMA_LOG_ERR("mmap buf failed.\n");
+		CDMA_LOG_ERR("mmap buf failed\n");
 		return NULL;
 	}
 
 	ret = madvise(buf, buf_size, MADV_DONTFORK);
 	if (ret) {
 		(void)munmap(buf, buf_size);
-		CDMA_LOG_ERR("buf madvise failed, ret = %d.\n", ret);
+		CDMA_LOG_ERR("buf madvise failed, ret = %d\n", ret);
 		return NULL;
 	}
 
@@ -48,14 +48,14 @@ int cdma_u_alloc_queue_buf(struct cdma_u_jetty_queue *q, uint32_t max_cnt,
 	if (wrid_en) {
 		q->wrid = (uintptr_t *)malloc(q->baseblk_cnt * sizeof(uint64_t));
 		if (!q->wrid) {
-			CDMA_LOG_ERR("alloc buffer for wrid failed.\n");
+			CDMA_LOG_ERR("alloc buffer for wrid failed\n");
 			return -ENOMEM;
 		}
 	}
 
 	q->qbuf = cdma_u_alloc_buf(q->qbuf_size);
 	if (!q->qbuf) {
-		CDMA_LOG_ERR("alloc queue buffer failed.\n");
+		CDMA_LOG_ERR("alloc queue buffer failed\n");
 		goto err_alloc_buf;
 	}
 

@@ -32,7 +32,7 @@ typedef union dma_jfs_wr_flag {
 						 * 1: relax order
 						 * 2: strong order
 						 * 3: reserve */ /* see cdma_order_type_t */
-		uint32_t comp_order : 1;	/* 0: There is no completion order with othwe WR.
+		uint32_t comp_order : 1;	/* 0: There is no completion order with other WR.
 						 * 1: Completion order with previous WR.
 						 */
 		uint32_t fence : 1;		/* 0: There is not fence.

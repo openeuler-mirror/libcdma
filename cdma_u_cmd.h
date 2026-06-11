@@ -6,8 +6,8 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  */
 
-#ifndef __CDMA_CMD_H__
-#define __CDMA_CMD_H__
+#ifndef __CDMA_U_CMD_H__
+#define __CDMA_U_CMD_H__
 #include <stdio.h>
 #include "cdma_u_lib.h"
 #include "cdma_u_types.h"

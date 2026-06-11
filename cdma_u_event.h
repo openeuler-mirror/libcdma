@@ -6,8 +6,8 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  */
 
-#ifndef __CDMA_EVENT_H__
-#define __CDMA_EVENT_H__
+#ifndef __CDMA_U_EVENT_H__
+#define __CDMA_U_EVENT_H__
 #include "cdma_u_lib.h"
 
 #define EVENT_WAIT_TIME 10000

@@ -65,7 +65,7 @@ void cdma_getenv_log_level(void)
 		return;
 
 	if (strnlen(level_str, CDMA_ENV_MAX_LEN) >= CDMA_ENV_MAX_LEN) {
-		CDMA_LOG_ERR("invalid parameter: log level str.");
+		CDMA_LOG_ERR("invalid parameter: log level str\n");
 		return;
 	}
 
@@ -93,7 +93,7 @@ int cdma_vlog(const char *function, int line, enum cdma_log_level level,
 
 	ret = vsnprintf(logmsg, MAX_LOG_LEN, newformat, va);
 	if (ret == -1) {
-		(void)printf("logmsg size exceeds MAX_LOG_LEN size :%d.\n",
+		(void)printf("logmsg size exceeds MAX_LOG_LEN size: %d\n",
 			     MAX_LOG_LEN);
 		return ret;
 	}

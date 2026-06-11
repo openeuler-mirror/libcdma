@@ -59,7 +59,7 @@ struct dma_context *dma_create_context(struct dma_device *dma_dev)
 
 	ctx = cdma_create_context(dma_dev);
 	if (!ctx) {
-		CDMA_LOG_ERR("create context failed.\n");
+		CDMA_LOG_ERR("create context failed\n");
 		return NULL;
 	}
 
@@ -79,13 +79,13 @@ struct dma_queue *dma_alloc_queue(struct dma_context *ctx, struct queue_cfg *cfg
 	struct dma_queue *queue;
 
 	if (!ctx || !cfg) {
-		CDMA_LOG_ERR("alloc queue parameter is null.\n");
+		CDMA_LOG_ERR("alloc queue parameter is null\n");
 		return NULL;
 	}
 
 	queue = cdma_alloc_queue(ctx, cfg);
 	if (!queue) {
-		CDMA_LOG_ERR("alloc queue failed.\n");
+		CDMA_LOG_ERR("alloc queue failed\n");
 		return NULL;
 	}
 
@@ -106,13 +106,13 @@ struct dma_seg *dma_register_seg(struct dma_context *ctx,
 	struct dma_seg *seg;
 
 	if (!ctx || !cfg || cfg->addr == 0 || cfg->len == 0) {
-		CDMA_LOG_ERR("register seg parameter is invalid.\n");
+		CDMA_LOG_ERR("register seg parameter is invalid\n");
 		return NULL;
 	}
 
 	seg = cdma_register_seg(ctx, cfg);
 	if (!seg) {
-		CDMA_LOG_ERR("register seg failed.\n");
+		CDMA_LOG_ERR("register seg failed\n");
 		return NULL;
 	}
 
@@ -130,7 +130,7 @@ void dma_unregister_seg(struct dma_context *ctx, struct dma_seg *seg)
 struct dma_seg *dma_import_seg(struct dma_seg_cfg *cfg)
 {
 	if (!cfg || cfg->addr == 0 || cfg->len == 0) {
-		CDMA_LOG_ERR("import seg parameter is invalid.\n");
+		CDMA_LOG_ERR("import seg parameter is invalid\n");
 		return NULL;
 	}
 
@@ -196,7 +196,7 @@ dma_status dma_write_with_notify(struct dma_queue *queue,
 int dma_poll_queue(struct dma_queue *queue, uint32_t cr_cnt, struct dma_cr *cr)
 {
 	if (!queue || !cr_cnt || !cr) {
-		CDMA_LOG_ERR("invalid parameter.\n");
+		CDMA_LOG_ERR("invalid parameter\n");
 		return -EINVAL;
 	}
 
@@ -207,7 +207,7 @@ int dma_wait_queue(struct dma_queue *queue, uint32_t cr_cnt, int timeout,
 				   struct dma_cr *cr)
 {
 	if (!queue || !queue->cfg.event_mode || !cr_cnt || !cr) {
-		CDMA_LOG_ERR("invalid parameter.\n");
+		CDMA_LOG_ERR("invalid parameter\n");
 		return -EINVAL;
 	}
 
