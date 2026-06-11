@@ -19,12 +19,12 @@
 static int cdma_rw_check(struct dma_seg *rmt_seg, struct dma_seg *local_seg)
 {
 	if (rmt_seg->len == 0 || local_seg->len == 0) {
-		CDMA_LOG_ERR("segment check invalid len.\n");
+		CDMA_LOG_ERR("segment check invalid len\n");
 		return -EINVAL;
 	}
 
 	if (rmt_seg->sva == 0 || local_seg->sva == 0) {
-		CDMA_LOG_ERR("segment check invalid address.\n");
+		CDMA_LOG_ERR("segment check invalid address\n");
 		return -EINVAL;
 	}
 
@@ -67,7 +67,7 @@ dma_status cdma_cas(struct dma_queue *queue, struct dma_seg *rmt_seg,
 	int ret;
 
 	if (cdma_rw_check(rmt_seg, local_seg)) {
-		CDMA_LOG_ERR("cas param check failed.\n");
+		CDMA_LOG_ERR("cas param check failed\n");
 		return DMA_STATUS_INVAL;
 	}
 
@@ -91,7 +91,7 @@ dma_status cdma_cas(struct dma_queue *queue, struct dma_seg *rmt_seg,
 
 	ret = cdma_u_post_jfs_wr(cdma_queue->cdma_jfs, &wr, &bad_wr);
 	if (ret) {
-		CDMA_LOG_ERR("post jfs for cas failed, ret = %d, seid = %u, deid = %u.\n",
+		CDMA_LOG_ERR("post jfs for cas failed, ret = %d, seid = %u, deid = %u\n",
 			     ret, cfg->seid, cfg->deid);
 		return DMA_STATUS_INVAL;
 	}
@@ -110,7 +110,7 @@ dma_status cdma_faa(struct dma_queue *queue, struct dma_seg *rmt_seg,
 	int ret;
 
 	if (cdma_rw_check(rmt_seg, local_seg)) {
-		CDMA_LOG_ERR("faa param check failed.\n");
+		CDMA_LOG_ERR("faa param check failed\n");
 		return DMA_STATUS_INVAL;
 	}
 
@@ -127,7 +127,7 @@ dma_status cdma_faa(struct dma_queue *queue, struct dma_seg *rmt_seg,
 
 	ret = cdma_u_post_jfs_wr(cdma_queue->cdma_jfs, &wr, &bad_wr);
 	if (ret) {
-		CDMA_LOG_ERR("post jfs for faa failed, ret = %d, seid = %u, deid = %u.\n",
+		CDMA_LOG_ERR("post jfs for faa failed, ret = %d, seid = %u, deid = %u\n",
 			     ret, cfg->seid, cfg->deid);
 		return DMA_STATUS_INVAL;
 	}
@@ -147,7 +147,7 @@ dma_status cdma_write(struct dma_queue *queue, struct dma_seg *rmt_seg,
 	int ret;
 
 	if (cdma_rw_check(rmt_seg, local_seg)) {
-		CDMA_LOG_ERR("write param check failed.\n");
+		CDMA_LOG_ERR("write param check failed\n");
 		return DMA_STATUS_INVAL;
 	}
 
@@ -174,7 +174,7 @@ dma_status cdma_write(struct dma_queue *queue, struct dma_seg *rmt_seg,
 
 	ret = cdma_u_post_jfs_wr(cdma_queue->cdma_jfs, &wr, &bad_wr);
 	if (ret) {
-		CDMA_LOG_ERR("post jfs for write failed, ret = %d, seid = %u, deid = %u.\n",
+		CDMA_LOG_ERR("post jfs for write failed, ret = %d, seid = %u, deid = %u\n",
 			     ret, cfg->seid, cfg->deid);
 		return DMA_STATUS_INVAL;
 	}
@@ -193,7 +193,7 @@ dma_status cdma_read(struct dma_queue *queue, struct dma_seg *rmt_seg,
 	int ret;
 
 	if (cdma_rw_check(rmt_seg, local_seg)) {
-		CDMA_LOG_ERR("read param check failed.\n");
+		CDMA_LOG_ERR("read param check failed\n");
 		return DMA_STATUS_INVAL;
 	}
 
@@ -212,7 +212,7 @@ dma_status cdma_read(struct dma_queue *queue, struct dma_seg *rmt_seg,
 
 	ret = cdma_u_post_jfs_wr(cdma_queue->cdma_jfs, &wr, &bad_wr);
 	if (ret) {
-		CDMA_LOG_ERR("post jfs for read failed, ret = %d, seid = %u, deid = %u.\n",
+		CDMA_LOG_ERR("post jfs for read failed, ret = %d, seid = %u, deid = %u\n",
 			     ret, cfg->seid, cfg->deid);
 		return DMA_STATUS_INVAL;
 	}
@@ -227,7 +227,7 @@ int cdma_cmd_create_jfce(struct dma_context *ctx, dma_jfce_t *jfce)
 	int ret;
 
 	if (ctx == NULL || ctx->dma_dev == NULL || ctx->dma_dev->fd < 0) {
-		CDMA_LOG_ERR("create jfce cmd parameter invalid.\n");
+		CDMA_LOG_ERR("create jfce cmd parameter invalid\n");
 		return -EINVAL;
 	}
 
@@ -237,7 +237,7 @@ int cdma_cmd_create_jfce(struct dma_context *ctx, dma_jfce_t *jfce)
 
 	ret = ioctl(ctx->dma_dev->fd, CDMA_SYNC, &hdr);
 	if (ret != 0) {
-		CDMA_LOG_ERR("ioctl execute create jfce, ret = %d %d, cmd = %u.\n", ret,
+		CDMA_LOG_ERR("ioctl execute create jfce, ret = %d %d, cmd = %u\n", ret,
 			     errno, hdr.command);
 		return ret;
 	}
@@ -264,7 +264,7 @@ int cdma_cmd_create_ctp(struct dma_context *ctx, struct dma_tp *ctp,
 	int ret;
 
 	if (!ctx || !ctx->dma_dev || ctx->dma_dev->fd < 0 || !ctp || !cfg) {
-		CDMA_LOG_ERR("create ctp cmd parameter invalid.\n");
+		CDMA_LOG_ERR("create ctp cmd parameter invalid\n");
 		return -EINVAL;
 	}
 
@@ -281,7 +281,7 @@ int cdma_cmd_create_ctp(struct dma_context *ctx, struct dma_tp *ctp,
 
 	ret = ioctl(ctx->dma_dev->fd, CDMA_SYNC, &hdr);
 	if (ret != 0) {
-		CDMA_LOG_ERR("ioctl execute create ctp, ret = %d %d, cmd = %u.\n", ret,
+		CDMA_LOG_ERR("ioctl execute create ctp, ret = %d %d, cmd = %u\n", ret,
 			     errno, hdr.command);
 		return ret;
 	}
@@ -302,7 +302,7 @@ int cdma_cmd_delete_ctp(struct dma_tp *ctp)
 
 	if (!ctp || !ctp->dma_ctx || !ctp->dma_ctx->dma_dev ||
 		ctp->dma_ctx->dma_dev->fd < 0) {
-		CDMA_LOG_ERR("cdma delete ctp cmd parameter invalid.\n");
+		CDMA_LOG_ERR("cdma delete ctp cmd parameter invalid\n");
 		return -EINVAL;
 	}
 
@@ -315,7 +315,7 @@ int cdma_cmd_delete_ctp(struct dma_tp *ctp)
 
 	ret = ioctl(ctp->dma_ctx->dma_dev->fd, CDMA_SYNC, &hdr);
 	if (ret != 0) {
-		CDMA_LOG_ERR("ioctl execute delete ctp, ret = %d %d, cmd = %u.\n", ret,
+		CDMA_LOG_ERR("ioctl execute delete ctp, ret = %d %d, cmd = %u\n", ret,
 			     errno, hdr.command);
 		return ret;
 	}
@@ -346,7 +346,7 @@ int cdma_u_cmd_create_jfs(struct dma_context *ctx, struct dma_jfs *jfs,
 
 	if (!ctx || !ctx->dma_dev || ctx->dma_dev->fd < 0 || !jfs ||
 		!cfg || !cfg->jfc) {
-		CDMA_LOG_ERR("create jfs cmd parameter invalid.\n");
+		CDMA_LOG_ERR("create jfs cmd parameter invalid\n");
 		return -EINVAL;
 	}
 
@@ -373,7 +373,7 @@ int cdma_u_cmd_create_jfs(struct dma_context *ctx, struct dma_jfs *jfs,
 
 	ret = ioctl(ctx->dma_dev->fd, CDMA_SYNC, &hdr);
 	if (ret != 0) {
-		CDMA_LOG_ERR("ioctl execute create jfs, ret = %d %d, cmd = %u.\n", ret,
+		CDMA_LOG_ERR("ioctl execute create jfs, ret = %d %d, cmd = %u\n", ret,
 			     errno, hdr.command);
 		return ret;
 	}
@@ -391,7 +391,7 @@ int cdma_u_cmd_delete_jfs(struct dma_jfs *jfs)
 
 	if (!jfs || !jfs->dma_ctx || !jfs->dma_ctx->dma_dev ||
 		jfs->dma_ctx->dma_dev->fd < 0) {
-		CDMA_LOG_ERR("delete jfs cmd parameter invalid");
+		CDMA_LOG_ERR("delete jfs cmd parameter invalid\n");
 		return -EINVAL;
 	}
 
@@ -404,7 +404,7 @@ int cdma_u_cmd_delete_jfs(struct dma_jfs *jfs)
 
 	ret = ioctl(jfs->dma_ctx->dma_dev->fd, CDMA_SYNC, &hdr);
 	if (ret != 0) {
-		CDMA_LOG_ERR("ioctl execute delete jfs, ret = %d %d, cmd = %u.\n", ret,
+		CDMA_LOG_ERR("ioctl execute delete jfs, ret = %d %d, cmd = %u\n", ret,
 			     errno, hdr.command);
 		return ret;
 	}

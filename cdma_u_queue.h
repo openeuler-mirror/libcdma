@@ -6,8 +6,8 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  */
 
-#ifndef __CDMA_QUEUE_H__
-#define __CDMA_QUEUE_H__
+#ifndef __CDMA_U_QUEUE_H__
+#define __CDMA_U_QUEUE_H__
 #include <cdma_abi.h>
 #include "cdma_u_types.h"
 #include "cdma_u_log.h"

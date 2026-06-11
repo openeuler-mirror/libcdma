@@ -10,7 +10,6 @@
 #include "cdma_u_db.h"
 #include "cdma_u_log.h"
 #include "cdma_u_cmd.h"
-#include "cdma_u_log.h"
 #include "cdma_u_jfc.h"
 #include "cdma_u_jfs.h"
 
@@ -34,7 +33,7 @@ static int cdma_u_exec_create_jfs_cmd(struct dma_context *ctx,
 
 	ret = cdma_u_cmd_create_jfs(ctx, &jfs->base, cfg, &udata);
 	if (ret)
-		CDMA_LOG_ERR("cmd create jfs failed, ret = %d.\n", ret);
+		CDMA_LOG_ERR("cmd create jfs failed, ret = %d\n", ret);
 
 	return ret;
 }
@@ -60,7 +59,7 @@ static int cdma_u_create_sq(struct cdma_u_jetty_queue *sq,
 	uint32_t sqe_bb_cnt;
 
 	if (pthread_spin_init(&sq->lock, PTHREAD_PROCESS_PRIVATE)) {
-		CDMA_LOG_ERR("init lock failed.\n");
+		CDMA_LOG_ERR("init lock failed\n");
 		return -EINVAL;
 	}
 
@@ -75,7 +74,7 @@ static int cdma_u_create_sq(struct cdma_u_jetty_queue *sq,
 	wqebb_depth = roundup_pow_of_two(sqe_bb_cnt * cfg->depth);
 	if (cdma_u_alloc_queue_buf(sq, wqebb_depth, CDMA_JFS_WQEBB,
 							   CDMA_HW_PAGE_SIZE, true)) {
-		CDMA_LOG_ERR("alloc jfs wqe buf failed.\n");
+		CDMA_LOG_ERR("alloc jfs wqe buf failed\n");
 		(void)pthread_spin_destroy(&sq->lock);
 		return -EINVAL;
 	}
@@ -90,10 +89,10 @@ static int cdma_verify_jfs_param(struct dma_context *ctx,
 
 	if (!cfg->depth || cfg->depth > caps->max_jfs_depth ||
 		cfg->max_sge > caps->max_jfs_sge) {
-		CDMA_LOG_ERR("jfs param is invalid, depth = %u, sge = %u, \
-					 max_depth = %u, max_jfs_sge = %u.\n",
-					 cfg->depth, cfg->max_sge, caps->max_jfs_depth,
-					 caps->max_jfs_sge);
+		CDMA_LOG_ERR("jfs param is invalid, depth = %u, sge = %u,"
+			     " max_depth = %u, max_jfs_sge = %u\n",
+			     cfg->depth, cfg->max_sge, caps->max_jfs_depth,
+			     caps->max_jfs_sge);
 		return -EINVAL;
 	}
 
@@ -113,7 +112,7 @@ struct dma_jfs *cdma_u_create_jfs(struct dma_context *ctx,
 	int ret;
 
 	if (!ctx || !cfg || !ctx->dma_dev) {
-		CDMA_LOG_ERR("create jfs parameter invalid.\n");
+		CDMA_LOG_ERR("create jfs parameter invalid\n");
 		return NULL;
 	}
 
@@ -123,12 +122,12 @@ struct dma_jfs *cdma_u_create_jfs(struct dma_context *ctx,
 
 	jfs = (struct cdma_u_jfs *)calloc(1, sizeof(*jfs));
 	if (!jfs) {
-		CDMA_LOG_ERR("alloc jfs memory failed.\n");
+		CDMA_LOG_ERR("alloc jfs memory failed\n");
 		return NULL;
 	}
 
 	if (cdma_u_create_sq(&jfs->sq, cfg)) {
-		CDMA_LOG_ERR("create sq failed.\n");
+		CDMA_LOG_ERR("create sq failed\n");
 		goto err_create_sq;
 	}
 
@@ -164,20 +163,20 @@ int cdma_u_delete_jfs(struct dma_jfs *jfs)
 	int ret;
 
 	if (!jfs || !jfs->dma_ctx) {
-		CDMA_LOG_ERR("dma parameter invalid in delete jfs.\n");
+		CDMA_LOG_ERR("dma parameter invalid in delete jfs\n");
 		return -EINVAL;
 	}
 
 	cdma_ctx = to_cdma_u_ctx(jfs->dma_ctx);
 	cdma_jfs = to_cdma_u_jfs(jfs);
 	if (!cdma_ctx || !cdma_jfs) {
-		CDMA_LOG_ERR("user dma parameter invalid in delete jfs.\n");
+		CDMA_LOG_ERR("user dma parameter invalid in delete jfs\n");
 		return -EINVAL;
 	}
 
 	ret = cdma_u_cmd_delete_jfs(jfs);
 	if (ret)
-		CDMA_LOG_WARN("cdma delete jfs cmd failed, ret = %d.\n", ret);
+		CDMA_LOG_WARN("cdma delete jfs cmd failed, ret = %d\n", ret);
 
 	if (!!jfs->jfs_cfg.jfc)
 		cdma_u_clean_jfc((dma_jfc_t *)jfs->jfs_cfg.jfc, jfs->jfs_id);
@@ -263,7 +262,6 @@ static int cdma_fill_multi_sge(struct cdma_jfs_sqe_ctl *wqe_ctl, dma_jfs_wr_t *w
 
 static int cdma_u_fill_write_sqe(struct cdma_jfs_sqe_ctl *wqe_ctl,
 				 dma_jfs_wr_t *wr)
-
 {
 	struct cdma_token_info *token_info;
 	struct cdma_wqe_sge *sge;
@@ -271,7 +269,7 @@ static int cdma_u_fill_write_sqe(struct cdma_jfs_sqe_ctl *wqe_ctl,
 
 	sge = (struct cdma_wqe_sge *)((char *)wqe_ctl + cdma_get_ctl_len(wr->opcode));
 	if (cdma_fill_multi_sge(wqe_ctl, wr, sge)) {
-		CDMA_LOG_ERR("cdma fill sw sge invalid.\n");
+		CDMA_LOG_ERR("cdma fill sw sge invalid\n");
 		return -EINVAL;
 	}
 
@@ -358,7 +356,7 @@ static int cdma_u_fill_cas_sqe(struct cdma_jfs_sqe_ctl *wqe_ctl,
 
 	sge_info = wr->cas.src;
 	if (!cdma_check_atomic_len(sge_info->len, wr->opcode)) {
-		CDMA_LOG_ERR("cdma cas sge len invalid, len = %u.\n", sge_info->len);
+		CDMA_LOG_ERR("cdma cas sge len invalid, len = %u\n", sge_info->len);
 		return -EINVAL;
 	}
 
@@ -401,7 +399,7 @@ static int cdma_u_fill_faa_sqe(struct cdma_jfs_sqe_ctl *wqe_ctl,
 
 	sge_info = wr->faa.src;
 	if (!cdma_check_atomic_len(sge_info->len, wr->opcode)) {
-		CDMA_LOG_ERR("cdma faa sge len invalid, len = %u.\n", sge_info->len);
+		CDMA_LOG_ERR("cdma faa sge len invalid, len = %u\n", sge_info->len);
 		return -EINVAL;
 	}
 
@@ -446,7 +444,7 @@ static int cdma_fill_normal_sge(struct cdma_jfs_sqe_ctl *wqe_ctl,
 	case CDMA_WR_OPC_FADD:
 		return cdma_u_fill_faa_sqe(wqe_ctl, wr);
 	default:
-		CDMA_LOG_ERR("cdma wr opcode invalid, opcode = %u.\n",
+		CDMA_LOG_ERR("cdma wr opcode invalid, opcode = %u\n",
 						(uint8_t)wr->opcode);
 		return -EINVAL;
 	}
@@ -471,7 +469,7 @@ static int cdma_set_sqe(struct cdma_jfs_sqe_ctl *wqe_ctl,
 
 	ret = cdma_fill_normal_sge(wqe_ctl, wr);
 	if (ret)
-		CDMA_LOG_ERR("cdma fill normal sge failed, opcode = %u in wr, ret = %d.\n",
+		CDMA_LOG_ERR("cdma fill normal sge failed, opcode = %u in wr, ret = %d\n",
 			     (uint8_t)wr->opcode, ret);
 
 	return ret;
@@ -546,13 +544,13 @@ static int cdma_post_one_wr(struct cdma_u_context *cdma_ctx,
 
 	opcode = cdma_parse_jfs_opcode(wr->opcode);
 	if (opcode == CDMA_OPCODE_INVALID) {
-		CDMA_LOG_ERR("cdma jfs parse invalid opcode = %u.\n",
+		CDMA_LOG_ERR("cdma jfs parse invalid opcode = %u\n",
 			     (uint8_t)wr->opcode);
 		return -EINVAL;
 	}
 
 	if (cdma_check_sge_num(opcode, sq, wr)) {
-		CDMA_LOG_ERR("cdma sge num invalid.\n");
+		CDMA_LOG_ERR("cdma sge num invalid\n");
 		return -EINVAL;
 	}
 
@@ -569,7 +567,7 @@ static int cdma_post_one_wr(struct cdma_u_context *cdma_ctx,
 
 	ret = cdma_copy_to_sq(sq, wqebb_cnt, tmp_sq);
 	if (ret) {
-		CDMA_LOG_ERR("cdma jfs sq overflow, ret = %d.\n", ret);
+		CDMA_LOG_ERR("cdma jfs sq overflow, ret = %d\n", ret);
 		return ret;
 	}
 
@@ -616,7 +614,7 @@ static int cdma_post_sq_wr(struct cdma_u_context *cdma_ctx,
 	for (it = wr; it != NULL; it = it->next) {
 		ret = cdma_post_one_wr(cdma_ctx, sq, it, &dwqe_addr, &dwqe_enable);
 		if (ret) {
-			CDMA_LOG_ERR("cdma jfs post one wr failed, ret = %d.\n", ret);
+			CDMA_LOG_ERR("cdma jfs post one wr failed, ret = %d\n", ret);
 			*bad_wr = it;
 			goto out;
 		}
@@ -650,7 +648,7 @@ int cdma_u_post_jfs_wr(struct dma_jfs *jfs, dma_jfs_wr_t *wr,
 
 	ret = cdma_post_sq_wr(cdma_ctx, &cdma_jfs->sq, wr, bad_wr);
 	if (ret)
-		CDMA_LOG_ERR("cdma jfs post wr failed, ret = %d.\n", ret);
+		CDMA_LOG_ERR("cdma jfs post wr failed, ret = %d\n", ret);
 
 	return ret;
 }
