@@ -586,11 +586,36 @@ static int cdma_post_one_wr(struct cdma_u_context *cdma_ctx,
 	return 0;
 }
 
-static void cdma_write_dsqe(struct cdma_u_jetty_queue *sq,
-			    struct cdma_jfs_sqe_ctl *ctrl)
+static void cdma_st64b(uint64_t *src, uint64_t *dst)
+{
+	asm volatile (
+		"mov x9, %0\n"
+		"mov x10, %1\n"
+		"ldr x0, [x9]\n"
+		"ldr x1, [x9, #8]\n"
+		"ldr x2, [x9, #16]\n"
+		"ldr x3, [x9, #24]\n"
+		"ldr x4, [x9, #32]\n"
+		"ldr x5, [x9, #40]\n"
+		"ldr x6, [x9, #48]\n"
+		"ldr x7, [x9, #56]\n"
+		".inst 0xf83f9140\n"
+		::"r" (src), "r"(dst)
+		: "x0", "x1", "x2", "x3", "x4", "x5", "x6", "x7",
+		  "x9", "x10", "cc", "memory"
+	);
+}
+
+static void cdma_write_dsqe(struct cdma_u_context *cdma_ctx,
+							struct cdma_u_jetty_queue *sq,
+							struct cdma_jfs_sqe_ctl *ctrl)
 {
 	ctrl->sqe_bb_idx = sq->pi;
-	mmio_memcpy_x64((uint64_t *)sq->dwqe_addr, (uint64_t *)ctrl);
+
+	if (cdma_ctx->st64b_en)
+		cdma_st64b((uint64_t *)ctrl, (uint64_t *)sq->dwqe_addr);
+	else
+		mmio_memcpy_x64((uint64_t *)sq->dwqe_addr, (uint64_t *)ctrl);
 }
 
 static void cdma_update_sq_db(struct cdma_u_jetty_queue *sq)
@@ -626,7 +651,7 @@ out:
 		cdma_to_device_barrier();
 
 		if (wr_cnt == 1 && dwqe_enable && (sq->pi - sq->ci == 1))
-			cdma_write_dsqe(sq, dwqe_addr);
+			cdma_write_dsqe(cdma_ctx, sq, dwqe_addr);
 		else
 			cdma_update_sq_db(sq);
 	}
