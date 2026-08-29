@@ -131,6 +131,7 @@ struct cdma_u_context {
 	struct cdma_u_doorbell db;
 	uint8_t cqe_size;
 	uint8_t dwqe_enable;
+	bool st64b_en;
 	int async_fd;
 };
 

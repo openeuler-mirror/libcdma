@@ -26,6 +26,8 @@ static void cdma_u_init_context(struct cdma_u_context *u_ctx,
 	u_ctx->db.type = CDMA_MMAP_JFC_PAGE;
 	u_ctx->cqe_size = info->out.cqe_size;
 	u_ctx->dwqe_enable = info->out.dwqe_enable;
+	u_ctx->st64b_en = (info->out.rsv_bitmap & CDMA_CTX_RSP_ST64B_EN) ?
+						(bool)info->out.st64b_en : false;
 	u_ctx->async_fd = info->out.async_fd;
 	u_ctx->dma_ctx.async_fd = info->out.async_fd;
 }
