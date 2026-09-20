@@ -36,7 +36,7 @@ static inline void cdma_fill_comm_wr(dma_jfs_wr_t *wr, struct dma_queue *queue)
 	struct cdma_u_queue *cdma_queue = to_cdma_u_queue(queue);
 
 	wr->flag.bs.complete_enable = 1;
-	wr->flag.bs.fence = 1;
+	wr->flag.bs.fence = 0;
 	wr->user_ctx = queue->cfg.user_ctx;
 	if (cdma_queue->cdma_tp)
 		wr->tpn = cdma_queue->cdma_tp->tpn;
