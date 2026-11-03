@@ -60,7 +60,7 @@ static int cdma_cmd_get_async_event(struct cdma_u_context *u_ctx,
 		arg->ctx = &u_ctx->dma_ctx;
 		arg->event_type = ret_aeqe.event_type;
 	} else if (fds.revents & POLLERR) {
-		CDMA_LOG_ERR("poll wait event POLLERR\n");
+		CDMA_LOG_ERR_RL(poll_err, "poll wait event POLLERR\n");
 		return -EFAULT;
 	}
 
@@ -75,8 +75,9 @@ int cdma_poll_queue(struct dma_queue *queue, uint32_t cr_cnt, struct dma_cr *cr)
 
 	npolled = cdma_u_poll_jfc(cdma_queue->cdma_jfc, cr_cnt, cr);
 	if (npolled > 0 && cr->status != DMA_CR_SUCCESS) {
-		CDMA_LOG_ERR("poll jfc npolled = %d, seid = %u, deid = %u\n",
-			npolled, cfg->seid, cfg->deid);
+		CDMA_LOG_ERR_RL(poll_jfc_fail,
+						"poll jfc npolled = %d, seid = %u, deid = %u\n",
+						npolled, cfg->seid, cfg->deid);
 	}
 
 	return npolled;
@@ -91,7 +92,7 @@ int cdma_wait_queue(struct dma_queue *queue, uint32_t cr_cnt, int timeout,
 
 	wait_cnt = cdma_u_wait_jfc(cdma_queue->cdma_jfce, cr_cnt, timeout);
 	if (wait_cnt < 0) {
-		CDMA_LOG_ERR("wait jfc failed, ret = %d\n", wait_cnt);
+		CDMA_LOG_ERR_RL(wait_jfc_fail, "wait jfc failed, ret = %d\n", wait_cnt);
 		return -EFAULT;
 	}
 

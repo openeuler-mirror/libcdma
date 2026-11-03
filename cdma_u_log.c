@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
+#include <time.h>
 #include <sys/types.h>
 #include <syslog.h>
 #include "cdma_u_log.h"
@@ -33,6 +34,31 @@ static inline void cdma_default_log_func(int level, char *message)
 inline bool cdma_log_drop(enum cdma_log_level level)
 {
 	return level > g_cdma_log_level.level;
+}
+
+bool cdma_log_ratelimit(struct cdma_log_rl_state *state)
+{
+	struct timespec ts;
+	time_t now;
+
+	if (clock_gettime(CLOCK_MONOTONIC, &ts) != 0)
+		return true;
+
+	now = ts.tv_sec;
+	time_t window = atomic_load(&state->window_start);
+	time_t elapsed = now - window;
+
+	while (elapsed < 0 || elapsed >= CDMA_LOG_RATE_INTERVAL_SEC) {
+		if (atomic_compare_exchange_strong(&state->window_start, &window, now)) {
+			atomic_store(&state->count, 1);
+			return true;
+		}
+
+		window = atomic_load(&state->window_start);
+		elapsed = now - window;
+	}
+
+	return atomic_fetch_add(&state->count, 1) < CDMA_LOG_RATE_BURST;
 }
 
 enum cdma_log_level cdma_log_get_level(const char *level_string)
