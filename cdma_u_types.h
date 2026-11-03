@@ -62,7 +62,6 @@ typedef enum dma_wr_opcode {
 	CDMA_WR_OPC_CAS = 0x20,
 	CDMA_WR_OPC_SWAP = 0x21,
 	CDMA_WR_OPC_FADD = 0x22,
-	CDMA_WR_OPC_NOP = 0x51,
 	CDMA_WR_OPC_LAST
 } dma_wr_opcode_t;
 
