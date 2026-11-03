@@ -303,9 +303,10 @@ static enum jfc_poll_state cdma_parse_cqe_for_jfc(struct cdma_u_jfc_cqe *cqe,
 	cr->user_ctx = queue->wrid[queue->ci & queue->baseblk_mask];
 
 	if (cqe->status) {
-		CDMA_LOG_WARN("get sq %u cqe status abnormal, ci = %u,"
-			      " pi = %u, status = %u, substatus = %u\n", queue->idx,
-			      queue->ci, queue->pi, cqe->status, cqe->substatus);
+		CDMA_LOG_WARN_RL(cqe_status_abnormal,
+						 "get sq %u cqe status abnormal, ci=%u, pi=%u, status=%u, substatus=%u\n",
+						 queue->idx, queue->ci, queue->pi,
+						 cqe->status, cqe->substatus);
 	}
 
 	if (cdma_u_update_flush_cr(queue, cqe, cr))
