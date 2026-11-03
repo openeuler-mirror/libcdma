@@ -65,7 +65,7 @@ enum dma_cr_status {
 
 enum db_mmap_type {
 	CDMA_MMAP_JFC_PAGE,
-	CDMA_MMAP_JETTY_DSQE
+	CDMA_MMAP_JETTY_DSQE,
 };
 
 enum cdma_cmd {
@@ -83,7 +83,7 @@ enum cdma_cmd {
 	CDMA_CMD_CREATE_JFC,
 	CDMA_CMD_DELETE_JFC,
 	CDMA_CMD_CREATE_JFCE,
-	CDMA_CMD_MAX
+	CDMA_CMD_MAX,
 };
 
 enum {
