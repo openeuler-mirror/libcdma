@@ -33,7 +33,7 @@ static int cdma_cmd_get_async_event(struct cdma_u_context *u_ctx,
 	if (ret <= 0) {
 		CDMA_LOG_DEBUG("poll wait event, ret=%d\n", ret);
 		return ret;
-	} else if (fds.revents == POLLIN) {
+	} else if (fds.revents & POLLIN) {
 		ret = ioctl(u_ctx->async_fd, CDMA_CMD_GET_ASYNC_EVENT, &ret_aeqe);
 		if (ret != 0) {
 			CDMA_LOG_ERR("get async event ioctl, ret = %d %d\n", ret, errno);
@@ -59,7 +59,7 @@ static int cdma_cmd_get_async_event(struct cdma_u_context *u_ctx,
 			      ret_aeqe.event_type);
 		arg->ctx = &u_ctx->dma_ctx;
 		arg->event_type = ret_aeqe.event_type;
-	} else if (fds.revents == POLLERR) {
+	} else if (fds.revents & POLLERR) {
 		CDMA_LOG_ERR("poll wait event POLLERR\n");
 		return -EFAULT;
 	}

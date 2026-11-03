@@ -201,8 +201,6 @@ static uint8_t cdma_parse_jfs_opcode(dma_wr_opcode_t opcode)
 		return CDMA_OPCODE_CAS;
 	case CDMA_WR_OPC_FADD:
 		return CDMA_OPCODE_FAA;
-	case CDMA_WR_OPC_NOP:
-		return CDMA_OPCODE_NOP;
 	default:
 		return CDMA_OPCODE_INVALID;
 	}
@@ -493,9 +491,6 @@ static uint32_t cdma_get_wqebb_cnt(dma_jfs_wr_t *wr,
 	uint32_t normal_sge_num;
 	uint32_t sqe_ctl_len;
 	uint32_t wqebb_cnt;
-
-	if (wr->opcode == CDMA_WR_OPC_NOP)
-		return NOP_WQEBB_CNT;
 
 	sqe_ctl_len = cdma_get_ctl_len(wr->opcode);
 
