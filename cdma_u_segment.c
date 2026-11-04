@@ -40,7 +40,7 @@ static int cdma_register_kernel_seg(struct dma_context *ctx,
 				    struct dma_seg_cfg *cfg,
 				    struct dma_seg *seg)
 {
-	struct cdma_cmd_register_seg_args in_info;
+	struct cdma_cmd_register_seg_args in_info = { 0 };
 	struct cdma_ioctl_hdr hdr;
 	int ret;
 
@@ -105,7 +105,7 @@ free_seg:
 static void cdma_unregister_kernel_seg(struct dma_context *ctx,
 				       struct dma_seg *seg)
 {
-	struct cdma_cmd_unregister_seg_args in_info;
+	struct cdma_cmd_unregister_seg_args in_info = {0};
 	struct cdma_ioctl_hdr hdr;
 	int ret;
 

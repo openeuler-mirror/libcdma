@@ -190,6 +190,9 @@ dma_status dma_write_with_notify(struct dma_queue *queue,
 	if (!queue || !rmt_seg || !local_seg || !notify_seg)
 		return DMA_STATUS_INVAL;
 
+	if (!notify_seg->sva || !notify_seg->len)
+		return DMA_STATUS_INVAL;
+
 	return cdma_write(queue, rmt_seg, local_seg, notify_seg, notify_data);
 }
 

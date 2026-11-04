@@ -11,6 +11,8 @@
 
 #include <stdbool.h>
 #include <pthread.h>
+#include <stdatomic.h>
+#include <time.h>
 
 enum cdma_log_level {
 	CDMA_VLOG_LEVEL_EMERG = 0,
@@ -29,7 +31,13 @@ struct cdma_log_level_st {
 	pthread_mutex_t lock;
 };
 
+struct cdma_log_rl_state {
+	_Atomic time_t window_start;
+	_Atomic int count;
+};
+
 bool cdma_log_drop(enum cdma_log_level level);
+bool cdma_log_ratelimit(struct cdma_log_rl_state *state);
 void cdma_getenv_log_level(void);
 void cdma_log(const char *function, int line, enum cdma_log_level level,
 	      const char *format, ...) __attribute__((format(printf, 4, 5)));
@@ -49,5 +57,24 @@ do { \
 #define CDMA_LOG_WARN(...) CDMA_LOG(WARNING, __VA_ARGS__)
 
 #define CDMA_LOG_DEBUG(...) CDMA_LOG(DEBUG, __VA_ARGS__)
+
+/* ratelimit: max CDMA_LOG_RATE_BURST logs per CDMA_LOG_RATE_INTERVAL_SEC
+ * seconds, first log is always printed.
+ */
+#define CDMA_LOG_RATE_BURST 5
+#define CDMA_LOG_RATE_INTERVAL_SEC 5
+
+#define CDMA_LOG_RL(l, name, ...) \
+	do { \
+		static struct cdma_log_rl_state name##_rl; \
+		if (cdma_log_ratelimit(&name##_rl) && \
+			!cdma_log_drop(CDMA_VLOG_LEVEL_##l)) { \
+			cdma_log(__func__, __LINE__, CDMA_VLOG_LEVEL_##l, __VA_ARGS__); \
+		} \
+	} while (0)
+
+#define CDMA_LOG_ERR_RL(name, ...) CDMA_LOG_RL(ERR, name, __VA_ARGS__)
+
+#define CDMA_LOG_WARN_RL(name, ...) CDMA_LOG_RL(WARNING, name, __VA_ARGS__)
 
 #endif
