@@ -44,7 +44,7 @@ static int cdma_open_cdev(char *path)
 		return -EIO;
 	}
 
-	fd = open(real_path, O_RDWR);
+	fd = open(real_path, O_RDWR | O_CLOEXEC);
 	if (fd < 0)
 		CDMA_LOG_ERR("cdma open %s failed, errno = %d\n", real_path, errno);
 

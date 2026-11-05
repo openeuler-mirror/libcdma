@@ -70,7 +70,7 @@
 
 #define cdma_to_device_barrier() \
 	do { \
-		asm volatile("dsb ld" ::: "memory"); \
+		asm volatile("dsb st" ::: "memory"); \
 	} while (0)
 #define cdma_from_device_barrier() \
 	do { \
